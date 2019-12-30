@@ -27,4 +27,3 @@ fn find_floor(directions: &str) -> Option<usize> {
 
     None
 }
-
