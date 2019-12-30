@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 fn main() {
     let directions = load_input();
-    let houses = visit_houses(directions);
+    let houses = santa_visits(directions);
 
     println!("visited {} houses", houses);
 }
@@ -48,27 +48,50 @@ impl Location {
 
 impl Eq for Location {}
 
-fn visit_houses(directions: &str) -> usize {
-    let mut current = Location::new(0, 0);
+fn santa_visits(directions: &str) -> usize {
+    let mut santa = Location::new(0, 0);
+    let mut robo_santa = Location::new(0, 0);
     let mut visited: HashMap<Location, bool> = HashMap::new();
 
-    for dir in directions.chars() {
+    for dir in directions.chars().step_by(2) {
         match dir {
             '^' => {
-                current.north();
-                visited.insert(Location::from(&current), true);
+                santa.north();
+                visited.insert(Location::from(&santa), true);
             },
             'v' => {
-                current.south();
-                visited.insert(Location::from(&current), true);
+                santa.south();
+                visited.insert(Location::from(&santa), true);
             },
             '>' => {
-                current.east();
-                visited.insert(Location::from(&current), true);
+                santa.east();
+                visited.insert(Location::from(&santa), true);
             }
             '<' => {
-                current.west();
-                visited.insert(Location::from(&current), true);
+                santa.west();
+                visited.insert(Location::from(&santa), true);
+            },
+            _ => continue,
+        }
+    }
+
+    for dir in directions.chars().skip(1).step_by(2) {
+        match dir {
+            '^' => {
+                robo_santa.north();
+                visited.insert(Location::from(&robo_santa), true);
+            },
+            'v' => {
+                robo_santa.south();
+                visited.insert(Location::from(&robo_santa), true);
+            },
+            '>' => {
+                robo_santa.east();
+                visited.insert(Location::from(&robo_santa), true);
+            }
+            '<' => {
+                robo_santa.west();
+                visited.insert(Location::from(&robo_santa), true);
             },
             _ => continue,
         }
