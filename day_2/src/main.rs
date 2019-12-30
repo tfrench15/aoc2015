@@ -15,6 +15,7 @@ fn main() {
 #[derive(Debug)]
 struct Gift(u64, u64, u64);
 
+
 impl Gift {
     fn new(dimensions: &[&str]) -> Self {
         let mut digits: Vec<u64> = dimensions
