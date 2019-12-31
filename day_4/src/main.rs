@@ -27,7 +27,7 @@ fn run(input: &str) -> u64 {
             break n;
         }
 
-        n+= 1
+        n += 1
     }
 }
 
