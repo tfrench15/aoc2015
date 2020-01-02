@@ -1,12 +1,12 @@
+use std::collections::HashMap;
 
 fn main() {
     let strings = load_input();
 
     let count = strings
         .iter()
-        .filter(|word| has_three_vowels(&word))
-        .filter(|word| has_double_letter(&word))
-        .filter(|word| has_no_bad_pairs(&word))
+        .filter(|word| has_repeating_pair(&word))
+        .filter(|word| has_one_letter_repeat(&word))
         .collect::<Vec<&String>>()
         .len();
 
@@ -42,6 +42,59 @@ fn has_double_letter(input: &str) -> bool {
 
 fn has_no_bad_pairs(input: &str) -> bool {
     !(input.contains("ab") || input.contains("cd") || input.contains("pq") || input.contains("xy"))
+}
+
+fn has_repeating_pair(input: &str) -> bool {
+    let mut counts = HashMap::new();
+
+    let slice = input
+        .split("")
+        .filter(|ch| !ch.is_empty())
+        .collect::<Vec<&str>>();
+
+    for window in slice.windows(2) {
+        let first = window[0];
+        let second = window[1];
+
+        let counter = counts.entry((first, second)).or_insert(0);
+        *counter += 1;
+    }
+
+    // re-scan the list to remove overlaps
+    for window in slice.windows(3) {
+        let first = window[0];
+        let second = window[1];
+        let third = window[2];
+
+        if first == second && second == third {
+            if let Some(counter) = counts.get_mut(&(first, second)) {
+                *counter -= 1;
+            }
+        }
+    }
+
+    for val in counts.values() {
+        if *val >= 2 {
+            return true
+        }
+    }
+
+    false
+}
+
+fn has_one_letter_repeat(input: &str) -> bool {
+    let slice = input
+        .split("")
+        .filter(|ch| !ch.is_empty())
+        .collect::<Vec<&str>>();
+
+    for window in slice.windows(3) {
+        if window[0] == window[2] {
+            return true
+        }
+    }
+
+    false
 }
 
 fn load_input() -> Vec<String> {
@@ -88,6 +141,67 @@ mod tests {
     fn test_contains_bad_pair_is_not_nice() {
         let ok = super::has_no_bad_pairs("acwawepqoawepfas");
         assert_eq!(ok, false)
+    }
+
+    #[test]
+    fn test_has_repeating_pair_is_nice() {
+        let ok = super::has_repeating_pair("abcdefgcdxyz");
+        assert_eq!(ok, true);
+    }
+
+    #[test]
+    fn test_no_repeating_pair_is_not_nice() {
+        let ok = super::has_repeating_pair("abcdefghijklmnop");
+        assert_eq!(ok, false);
+    }
+
+    #[test]
+    fn test_overlapping_pairs_are_not_nice() {
+        let ok = super::has_repeating_pair("abcdefghhhijklmnop");
+        assert_eq!(ok, false);
+    }
+
+    #[test]
+    fn test_has_one_letter_repeat_is_nice() {
+        let ok = super::has_one_letter_repeat("asawepwladasdlfwe");
+        assert_eq!(ok, true);
+    }
+
+    #[test]
+    fn test_no_repeating_letters_is_not_nice() {
+        let ok = super::has_one_letter_repeat("abcdefghijklmnop");
+        assert_eq!(ok, false);
+    }
+
+    #[test]
+    fn part_two_case_one() {
+        let input = String::from("qjhvhtzxzqqjkmpb");
+
+        assert!(super::has_repeating_pair(&input) && super::has_one_letter_repeat(&input));
+    }
+
+    #[test]
+    fn part_two_case_two() {
+        let input = String::from("xxyxx");
+
+        println!("has repeating pair output: {}", super::has_repeating_pair(&input));
+        println!("has one letter repeat output: {}", super::has_one_letter_repeat(&input));
+
+        assert!(super::has_repeating_pair(&input) && super::has_one_letter_repeat(&input));
+    }
+
+    #[test]
+    fn part_two_case_three() {
+        let input = String::from("uurcxstgmygtbstg");
+
+        assert!(!(super::has_repeating_pair(&input) && super::has_one_letter_repeat(&input)))
+    }
+
+    #[test]
+    fn part_two_case_four() {
+        let input = String::from("ieodomkazucvgmuy");
+
+        assert!(!(super::has_repeating_pair(&input) && super::has_one_letter_repeat(&input)))
     }
 }
 
