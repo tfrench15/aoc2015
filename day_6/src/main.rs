@@ -110,7 +110,6 @@ impl LightGrid {
                 }
             },
         }
-        
     }
 }
 
