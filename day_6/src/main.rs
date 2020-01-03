@@ -9,15 +9,12 @@ fn main() {
         grid.decorate(&instruction);
     }
 
-    let mut on_counter = 0;
+    let mut brightness = 0;
     for val in grid.lights.values() {
-        match val {
-            LightStatus::On => { on_counter += 1; },
-            _ => continue,
-        };
+        brightness += val.0;
     }
 
-    println!("lights on are: {}", on_counter);
+    println!("brightness is: {}", brightness);
 }
 
 #[derive(Debug)]
@@ -51,7 +48,7 @@ impl LightGrid {
         for i in 0..1000 {
             for j in 0..1000 {
                 let light = Light::new(i, j);
-                grid.lights.insert(light, LightStatus::Off);
+                grid.lights.insert(light, LightStatus(0));
             }
         }
 
@@ -60,26 +57,21 @@ impl LightGrid {
 
     fn toggle(&mut self, light: &Light) {
         if let Some(l) = self.lights.get_mut(light) {
-            match *l {
-                LightStatus::Off => {
-                    *l = LightStatus::On;
-                },
-                LightStatus::On => {
-                    *l = LightStatus::Off;
-                },
-            }
+            l.0 += 2;
         }
     }
 
     fn turn_off(&mut self, light: &Light) {
         if let Some(l) = self.lights.get_mut(light) {
-            *l = LightStatus::Off;
+            if l.0 > 0 {
+                l.0 -= 1;
+            }
         }
     }
 
     fn turn_on(&mut self, light: &Light) {
         if let Some(l) = self.lights.get_mut(light) {
-            *l = LightStatus::On;
+            l.0 += 1;
         }
     }
 
@@ -133,10 +125,7 @@ enum Action {
 }
 
 #[derive(Debug)]
-enum LightStatus {
-    On,
-    Off,
-}
+struct LightStatus(u32);
 
 fn load_input() -> &'static str {
     include_str!("input.txt")
