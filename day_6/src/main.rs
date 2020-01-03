@@ -5,50 +5,78 @@ fn main() {
 }
 
 #[derive(Debug)]
+struct Instruction {
+    action: Action,
+    start: (usize, usize),
+    end: (usize, usize),
+}
+
+impl Instruction {
+    fn new(action: Action, start: (usize, usize), end: (usize, usize)) -> Self {
+        Instruction {
+            action,
+            start, 
+            end,
+        }
+    }
+}
+
+#[derive(Debug)]
 struct LightGrid {
     lights: HashMap<Light, LightStatus>,
 }
 
 impl LightGrid {
     fn new() -> Self {
-        LightGrid {
+        let mut grid = LightGrid {
             lights: HashMap::new(),
+        };
+
+        for i in 0..1000 {
+            for j in 0..1000 {
+                let light = Light::new(i, j);
+                grid.lights.insert(light, LightStatus::Off);
+            }
+        }
+
+        grid
+    }
+
+    fn toggle(&mut self, light: &Light) {
+        if let Some(l) = self.lights.get_mut(light) {
+            match *l {
+                LightStatus::Off => {
+                    *l = LightStatus::On;
+                },
+                LightStatus::On => {
+                    *l = LightStatus::Off;
+                },
+            }
+        }
+    }
+
+    fn turn_off(&mut self, light: &Light) {
+        if let Some(l) = self.lights.get_mut(light) {
+            *l = LightStatus::Off;
+        }
+    }
+
+    fn turn_on(&mut self, light: &Light) {
+        if let Some(l) = self.lights.get_mut(light) {
+            *l = LightStatus::On;
         }
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Hash)]
 struct Light {
-    x: u32,
-    y: u32,
+    x: usize,
+    y: usize,
 }
 
 impl Light {
-    fn new(x: u32, y: u32) -> Self {
-        Light {
-            status: LightStatus::Off,
-            x, 
-            y,
-        }
-    }
-
-    fn toggle(&mut self) {
-        match self.status {
-            LightStatus::On => {
-                self.status = LightStatus::Off;
-            },
-            LightStatus::Off => {
-                self.status = LightStatus::On;
-            },
-        };
-    }
-
-    fn turn_on(&mut self) {
-        self.status = LightStatus::On;
-    }
-
-    fn turn_off(&mut self) {
-        self.status = LightStatus::Off;
+    fn new(x: usize, y: usize) -> Self {
+        Light { x, y }
     }
 }
 
@@ -66,7 +94,9 @@ enum LightStatus {
 }
 
 fn load_input() -> &'static str {
-    include_str!("input.txt");
+    include_str!("input.txt")
 }
 
-fn parse_input(input: &str) -> Vec<
+fn parse_input(input: &str) -> Vec<Instruction> {
+    unimplemented!("build a vector of Instructions")
+}
