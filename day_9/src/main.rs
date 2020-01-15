@@ -1,8 +1,11 @@
+use std::collections::HashSet;
 
 fn main() {
     let data = load_input();
-    let routes = parse_input(data);
-    
+    let _routes = parse_routes(data);
+    let cities = parse_cities(data);
+
+    println!("cities: {:?}", cities);
 }
 
 #[derive(Debug, Hash)]
@@ -27,11 +30,15 @@ impl Route {
     }
 }
 
+fn calculate_distance() {
+    unimplemented!("todo!")
+}
+
 fn load_input() -> &'static str {
     include_str!("input.txt")
 }
 
-fn parse_input(input: &str) -> Vec<Route> {
+fn parse_routes(input: &str) -> Vec<Route> {
     let route_opts = input
         .split("\n")
         .filter(|i| !i.is_empty())
@@ -46,4 +53,21 @@ fn parse_input(input: &str) -> Vec<Route> {
     }
 
     routes
+}
+
+fn parse_cities(input: &str) -> HashSet<String> {
+    let lines = input
+        .split("\n")
+        .filter(|i| !i.is_empty())
+        .collect::<Vec<&str>>();
+
+    let mut cities = HashSet::new();
+
+    for line in lines {
+        let route = line.split_whitespace().collect::<Vec<&str>>();
+        let city = route[0].to_string();
+        cities.insert(city);
+    }
+
+    cities
 }
